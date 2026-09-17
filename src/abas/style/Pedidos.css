@@ -1,0 +1,245 @@
+.admin-container {
+  padding: 20px;
+  background-color: #F9F1EB;
+  min-height: 100vh;
+}
+
+.admin-container h2 {
+  color: #4A3728;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.lista-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pedido-card {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E2D8D2;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  padding: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #F0E6E1;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.pedido-id {
+  font-weight: bold;
+  color: #4A3728;
+  font-size: 16px;
+}
+
+.pedido-data {
+  color: #8C6D58;
+  font-size: 13px;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #333333;
+  font-size: 14px;
+}
+
+.financeiro-box {
+  background-color: #FAF8F7;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #E2D8D2;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quitado {
+  color: #27AE60;
+  font-weight: bold;
+}
+
+.pendente {
+  color: #C0392B;
+  font-weight: bold;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge-verde {
+  background-color: #E8F8F5;
+  color: #27AE60;
+}
+
+.badge-amarelo {
+  background-color: #FEF9E7;
+  color: #F1C40F;
+}
+
+.entrega-box {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.select-status {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #E2D8D2;
+  background-color: #FFF;
+  color: #4A3728;
+  font-weight: 500;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Estilo refinado para a miniatura da foto do produto */
+.item-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.thumb-img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #E2D8D2;
+  background-color: #FFF;
+}
+
+.item-descricao {
+  flex: 1;
+  font-size: 13px;
+  color: #4A3728;
+}
+
+/* Caixa de input para adicionar pagamento parcial */
+.pagamento-input-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.input-pagamento {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #E2D8D2;
+  font-size: 13px;
+  outline: none;
+}
+
+.btn-lancar-pgto {
+  background-color: #8C6D58;
+  color: #FFF;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-lancar-pgto:hover {
+  background-color: #6E5342;
+}
+
+/* Miniatura clicável */
+.thumb-img.clickable {
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.thumb-img.clickable:hover {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+/* Fundo escuro do Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Caixa interna do Modal */
+.modal-content {
+  background-color: #FFFFFF;
+  padding: 20px;
+  border-radius: 12px;
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Imagem ampliada dentro do modal */
+.modal-img-ampliada {
+  max-width: 80vw;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Botão de fechar (X) */
+.modal-fechar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #C0392B;
+  color: #FFF;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.modal-fechar:hover {
+  background: #962D22;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

@@ -1,0 +1,91 @@
+/* Palette da Cléo Perfumes */
+:root {
+  --fundo-base: #F9F1EB;
+  --header-bg: #E8C5B8;
+  --texto-marrom: #4A3728;
+  --marrom-suave: #7A6251;
+  --ativo-bg: #4A3728;
+  --ativo-texto: #F9F1EB;
+  --card-bg: #FFFFFF;
+  --borda-rosa: #E8C5B8;
+  --sucesso-verde: #16a34a;
+  --erro-vermelho: #e11d48;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--fundo-base);
+  color: var(--texto-marrom);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-container {
+  min-height: 100vh;
+  background-color: var(--fundo-base);
+}
+
+.main-header {
+  background-color: var(--header-bg);
+  padding: 16px 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(74, 55, 40, 0.08);
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--texto-marrom);
+  letter-spacing: 1px;
+}
+
+.brand-subtitle {
+  margin: 4px 0 16px 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--marrom-suave);
+}
+
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 10px 4px;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  color: var(--texto-marrom);
+}
+
+.tab-button.active {
+  background-color: var(--ativo-bg);
+  color: var(--ativo-texto);
+  transition: 0.2s;
+}
+
+.tab-button.active:hover {
+  transform: scale(1.2);
+}
+
+.tab-button.disable {
+  transition: 0.2s;
+}
+.tab-button.disable:hover {
+  transform: scale(1.2);
+}
+
+.main-content {
+  padding: 16px 12px;
+}

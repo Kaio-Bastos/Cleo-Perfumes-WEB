@@ -1,0 +1,246 @@
+/* ==========================================================================
+   CONTAINER & FORMULÁRIO PRINCIPAL
+   ========================================================================== */
+.cadastro-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.cadastro-title {
+  color: #4a3b32;
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+}
+
+.cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ==========================================================================
+   BOXES & GRIDS (Estrutura interna para evitar vazamentos)
+   ========================================================================== */
+.form-box {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #f0e6e1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.two-columns {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.field-group {
+  flex: 1;
+  min-width: 0; /* Impede que os inputs estourem o container no Flexbox */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b584c;
+}
+
+/* Base global para todos os inputs de texto */
+.input-text {
+  width: 100%;
+  box-sizing: border-box; /* Garante que padding e border fiquem dentro da largura */
+  padding: 10px 14px;
+  border: 1.5px solid #e2d8d2;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333333;
+  background-color: #faf8f7;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-text:focus {
+  border-color: #a87b68;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(168, 123, 104, 0.15);
+}
+
+/* ==========================================================================
+   PERSONALIZAÇÃO INDIVIDUAL DE CADA INPUT
+   ========================================================================== */
+
+/* 1. Código de Barras */
+.input-codigo-barras {
+  letter-spacing: 1px;
+  color: #2c3e50;
+}
+
+/* 2. Nome do Produto */
+.input-nome-produto {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* 3. Preço de Compra (Custo) */
+.input-preco-compra {
+  color: #c0392b;
+  font-weight: 600;
+  background-color: #fff9f9;
+}
+.input-preco-compra:focus {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+}
+
+/* 4. Preço de Venda */
+.input-preco-venda {
+  color: #27ae60;
+  font-weight: 600;
+  background-color: #f6fff9;
+}
+.input-preco-venda:focus {
+  border-color: #2ecc71;
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.15);
+}
+
+/* 5. Quantidade em Estoque */
+.input-quantidade {
+  text-align: center;
+  font-weight: 700;
+  color: #4a3b32;
+}
+
+/* 6. Validade */
+.input-validade {
+  color: #555555;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   FOTOS E CÂMERA (Preview expandido)
+   ========================================================================== */
+.webcam-box {
+  align-items: center;
+}
+
+.webcam-stream {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.webcam-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.previews-status {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.preview-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview-item p {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* Tamanho expandido da foto do produto */
+.preview-thumb-large {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid #e2d8d2;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+/* ==========================================================================
+   BOTÕES DE AÇÃO
+   ========================================================================== */
+.btn-action-primary {
+  background-color: #8c6d58;
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-action-primary:hover {
+  background-color: #735745;
+}
+
+.btn-action-cancel {
+  background-color: transparent;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+.btn-cam-ai {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-cam-official {
+  background-color: #2ecc71;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-submit {
+  background-color: #4a3b32;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover {
+  background-color: #362a23;
+}
