@@ -10,7 +10,7 @@ export default function Pagamentos() {
   const [novoValorParcela, setNovoValorParcela] = useState('');
   const [novaDataVencimento, setNovaDataVencimento] = useState('');
 
-  const API_COMPRAS = 'http://localhost:8080/api/compras';
+  const API_COMPRAS = 'https://cleuperfumesbackend.onrender.com/api/compras';
 
   useEffect(() => {
     carregarCompras();
@@ -73,7 +73,7 @@ export default function Pagamentos() {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/api/pagamentos', {
+      const response = await fetch('https://cleuperfumesbackend.onrender.com/api/pagamentos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(novoPagamentoPayload),

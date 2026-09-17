@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/api/produtos';
+const API_URL = 'https://cleuperfumesbackend.onrender.com/api/produtos';
 
 export const listarProdutos = async () => {
   const response = await fetch(API_URL);

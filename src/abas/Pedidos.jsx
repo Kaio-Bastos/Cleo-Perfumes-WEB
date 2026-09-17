@@ -16,9 +16,9 @@ export default function Pedidos() {
   const [produtoSelecionadoId, setProdutoSelecionadoId] = useState('');
   const [quantidadeItem, setQuantidadeItem] = useState(1);
 
-  const API_COMPRAS = 'http://localhost:8080/api/compras';
-  const API_PRODUTOS = 'http://localhost:8080/api/produtos';
-  const API_PAGAMENTOS = 'http://localhost:8080/api/pagamentos';
+  const API_COMPRAS = 'https://cleuperfumesbackend.onrender.com/api/compras';
+  const API_PRODUTOS = 'https://cleuperfumesbackend.onrender.com/api/produtos';
+  const API_PAGAMENTOS = 'https://cleuperfumesbackend.onrender.com/api/pagamentos';
 
   useEffect(() => {
     carregarCompras();
@@ -139,7 +139,7 @@ export default function Pedidos() {
 
   const alterarStatusParcela = async (pagamentoId, novoStatus) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/pagamentos/${pagamentoId}/status`, {
+      const response = await fetch(`https://cleuperfumesbackend.onrender.com/api/pagamentos/${pagamentoId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: novoStatus }),
