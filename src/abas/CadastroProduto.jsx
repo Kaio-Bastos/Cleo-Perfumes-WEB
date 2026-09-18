@@ -4,6 +4,7 @@ import Webcam from 'react-webcam';
 import Tesseract from 'tesseract.js';
 import { salvarProduto } from '../produtoService';
 import './style/CadastroProduto.css';
+import {  handleImagemComprimida  } from '../compressionImage';
 
 export default function CadastroProduto() {
   const estadoInicial = {
@@ -71,10 +72,13 @@ export default function CadastroProduto() {
     }
   };
 
-  const capturarFotoOficial = () => {
+  const capturarFotoOficial = async () => {
     if (webcamRef.current) {
       const screenshot = webcamRef.current.getScreenshot();
-      setFotoOficial(screenshot);
+      console.log("screenshot: "+ screenshot.length)
+      const fotoLeve = await handleImagemComprimida(screenshot)
+      console.log("fotoLeve: "+ fotoLeve.length )
+      setFotoOficial(fotoLeve);
       setCameraFotosAtiva(false);
     }
   };
