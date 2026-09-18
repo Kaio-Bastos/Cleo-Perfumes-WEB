@@ -102,7 +102,7 @@ export default function CadastroProduto() {
       nome: formState.nome,
       fotoUrl: fotoOficial,
       validade: formState.validade ? `${formState.validade}-01` : null,
-      valorBruto: parseFloat(formState.valor_compra || 0),
+      valorBruto: 0,
       valorLiquido: parseFloat(formState.valor_venda || 0),
       quantidade: parseInt(formState.quantidade || 0, 10)
     };
@@ -243,20 +243,6 @@ export default function CadastroProduto() {
 
         {/* Preços: Compra e Venda */}
         <div className="form-box two-columns">
-          <div className="field-group">
-            <label className="form-label">Preço Compra (R$)</label>
-            <input
-              type="number"
-              step="0.01"
-              name="valor_compra"
-              value={formState.valor_compra}
-              onChange={handleChange}
-              placeholder="Custo"
-              className="input-text input-preco-compra"
-              required
-            />
-          </div>
-
           <div className="field-group">
             <label className="form-label">Preço Venda (R$)</label>
             <input

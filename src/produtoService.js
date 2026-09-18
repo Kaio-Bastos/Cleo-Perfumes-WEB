@@ -27,5 +27,6 @@ export const deletarProduto = async (id) => {
   const response = await fetch(`${API_URL}/${id}`, {
     method: 'DELETE',
   });
+  console.log(response)
   if (!response.ok) throw new Error("Erro ao deletar");
 };

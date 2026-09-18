@@ -79,7 +79,7 @@ export default function Estoque() {
       const payload = {
         nome: produtoEditando.nome,
         validade: produtoEditando.validade + "-01",
-        valorBruto: produtoEditando.valorBruto,
+        valorBruto: 0,
         valorLiquido: produtoEditando.valorLiquido,
         quantidade: produtoEditando.quantidade,
         codigoBarras: produtoEditando.codigoBarras,
@@ -217,15 +217,6 @@ export default function Estoque() {
             />
             </div>
             
-            <div className="two-columns">
-              <input
-                type="number"
-                step="0.01"
-                className="input-text input-preco-compra"
-                value={produtoEditando.valorBruto}
-                onChange={e => setProdutoEditando({ ...produtoEditando, valorBruto: parseFloat(e.target.value) })}
-                placeholder="Compra (R$)"
-              />
               <input
                 type="number"
                 step="0.01"
@@ -234,7 +225,6 @@ export default function Estoque() {
                 onChange={e => setProdutoEditando({ ...produtoEditando, valorLiquido: parseFloat(e.target.value) })}
                 placeholder="Venda (R$)"
               />
-            </div>
 
             <div className="two-columns">
               <input
@@ -279,7 +269,6 @@ export default function Estoque() {
               <strong className="produto-nome">{p.nome}</strong>
               <span className="produto-ean">EAN: {p.codigoBarras || 'N/A'}</span>
               <div className="precos-row">
-                <span>Compra: R$ {p.valorBruto?.toFixed(2)}</span>
                 <span className="preco-venda"> Venda: R$ {p.valorLiquido?.toFixed(2)}</span>
               </div>
             </div>
