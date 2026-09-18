@@ -68,7 +68,7 @@ export default function Estoque() {
         await deletarProduto(id);
         setProdutos(produtos.filter(p => p.id !== id));
       } catch (err) {
-        alert("Erro ao excluir o produto.");
+        alert(err);
       }
     }
   };
