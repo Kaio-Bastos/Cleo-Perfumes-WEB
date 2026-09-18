@@ -27,7 +27,6 @@ export default function Estoque() {
         qrbox: { width: 250, height: 120 },
         formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]
       }, false);
-
       scanner.render(
         (codigo) => {
           setBusca(codigo); // Preenche o input de busca com o código lido
@@ -44,6 +43,7 @@ export default function Estoque() {
         },
         () => {}
       );
+      
     }
 
     return () => {
@@ -55,11 +55,18 @@ export default function Estoque() {
     try {
       const data = await listarProdutos();
       setProdutos(data);
+      
     } catch (err) {
       console.error(err);
     } finally {
       setCarregando(false);
     }
+  };
+
+  const formatarDataParaExibicao = (dataStr) => {
+    if (!dataStr) return "";
+    const [ano, mes, dia] = dataStr.split("-");
+    return `${mes}/${ano}`;
   };
 
   const handleDeletar = async (id, nome) => {
@@ -85,7 +92,6 @@ export default function Estoque() {
         codigoBarras: produtoEditando.codigoBarras,
         fotoUrl: produtoEditando.fotoUrl
       }
-      console.log(payload)
       await atualizarProduto(produtoEditando.id, payload);
       alert("Produto atualizado!");
       setProdutoEditando(null);
@@ -111,6 +117,7 @@ export default function Estoque() {
   }
 
   const OpenEditModal = (produto) =>{
+    console.log(produto)
     setProdutoEditando({...produto, validade: Separar(produto.validade)})
   }
 
@@ -269,6 +276,8 @@ export default function Estoque() {
               <strong className="produto-nome">{p.nome}</strong>
               <span className="produto-ean">EAN: {p.codigoBarras || 'N/A'}</span>
               <div className="precos-row">
+                <span>Vencimento: {formatarDataParaExibicao(p.validade)}</span>
+                
                 <span className="preco-venda"> Venda: R$ {p.valorLiquido?.toFixed(2)}</span>
               </div>
             </div>
