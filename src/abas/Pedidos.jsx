@@ -7,18 +7,19 @@ export default function Pedidos() {
   const [imagemZoom, setImagemZoom] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
 
+  // Estados para o Modal de Exclusão de Compra
+  const [compraParaDeletar, setCompraParaDeletar] = useState(null);
+
   // Estados do formulário de nova compra
   const [clienteNome, setClienteNome] = useState('');
   const [qtdParcelas, setQtdParcelas] = useState(1);
   const [itensCarrinho, setItensCarrinho] = useState([]);
   
-  // Estados temporários para adicionar itens no carrinho do pedido
   const [produtoSelecionadoId, setProdutoSelecionadoId] = useState('');
   const [quantidadeItem, setQuantidadeItem] = useState(1);
 
   const API_COMPRAS = 'https://cleuperfumesbackend.onrender.com/api/compras';
   const API_PRODUTOS = 'https://cleuperfumesbackend.onrender.com/api/produtos';
-  const API_PAGAMENTOS = 'https://cleuperfumesbackend.onrender.com/api/pagamentos';
 
   useEffect(() => {
     carregarCompras();
@@ -42,6 +43,28 @@ export default function Pedidos() {
       setProdutos(data);
     } catch (err) {
       console.error("Erro ao carregar produtos:", err);
+    }
+  };
+
+  const confirmarExclusaoCompra = async () => {
+    if (!compraParaDeletar) return;
+
+    try {
+      const response = await fetch(`${API_COMPRAS}/${compraParaDeletar.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCompras(compras.filter(c => c.id !== compraParaDeletar.id));
+        setCompraParaDeletar(null);
+        carregarProdutos(); // Atualiza o estoque caso o back-end estorne
+        alert("Compra excluída com sucesso!");
+      } else {
+        alert("Erro ao excluir a compra.");
+      }
+    } catch (error) {
+      console.error("Erro de conexão ao excluir:", error);
+      alert("Falha de conexão com o servidor.");
     }
   };
 
@@ -104,7 +127,7 @@ export default function Pedidos() {
         setQtdParcelas(1);
         setItensCarrinho([]);
         carregarCompras();
-        carregarProdutos(); // Atualiza estoque na tela
+        carregarProdutos();
       } else {
         alert("Erro ao registrar a compra.");
       }
@@ -114,10 +137,10 @@ export default function Pedidos() {
   };
 
   const formatarDataParaExibicao = (dataStr) => {
-  if (!dataStr) return "";
-  const [ano, mes, dia] = dataStr.split("-");
-  return `${dia}/${mes}/${ano}`;
-};
+    if (!dataStr) return "";
+    const [ano, mes, dia] = dataStr.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
 
   const alterarStatusEntrega = async (compraId, novoStatus) => {
     try {
@@ -146,7 +169,7 @@ export default function Pedidos() {
       });
 
       if (response.ok) {
-        carregarCompras(); // Atualiza a tela com o novo status e data recalculada
+        carregarCompras();
       } else {
         alert("Erro ao alterar o status do pagamento.");
       }
@@ -171,15 +194,25 @@ export default function Pedidos() {
       {/* LISTAGEM DE COMPRAS */}
       <div className="lista-cards">
         {Array.isArray(compras) && compras.length === 0 ? (
-        <p>Nenhuma compra registrada.</p>
-      ) : (
-        Array.isArray(compras) && compras.map((compra) => (
+          <p>Carregando...</p>
+        ) : (
+          Array.isArray(compras) && compras.map((compra) => (
             <div key={compra.id} className="pedido-card">
-              <div className="card-header">
-                <span className="pedido-id">Compra #{compra.id}</span>
-                <span className="pedido-data">
-                  {compra.dataCompra ? new Date(compra.dataCompra).toLocaleDateString() : ''}
-                </span>
+              <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span className="pedido-id">Compra #{compra.id}</span>
+                  <span className="pedido-data" style={{ marginLeft: '10px' }}>
+                    {compra.dataCompra ? new Date(compra.dataCompra).toLocaleDateString() : ''}
+                  </span>
+                </div>
+                {/* Botão para abrir o Modal de Exclusão */}
+                <button 
+                  onClick={() => setCompraParaDeletar(compra)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}
+                  title="Excluir Compra"
+                >
+                  🗑️
+                </button>
               </div>
 
               <div className="card-body">
@@ -233,13 +266,13 @@ export default function Pedidos() {
                                 >
                                   Dar Baixa
                                 </button>
-                              ) : (<button 
+                              ) : (
+                                <button 
                                   onClick={() => alterarStatusParcela(pag.id, "Pendente")}
                                   style={{ fontSize: '11px', padding: '2px 6px', background: '#ff0000', color: '#FFF', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                                 >
                                   Cancelar
                                 </button>
-
                               )}
                             </div>
                           </li>
@@ -269,10 +302,39 @@ export default function Pedidos() {
         )}
       </div>
 
+      {/* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO DA COMPRA */}
+      {compraParaDeletar && (
+        <div className="modal-overlay" onClick={() => setCompraParaDeletar(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', width: '100%', flexDirection: 'column', textAlign: 'center', gap: '15px' }}>
+            <button className="modal-fechar" onClick={() => setCompraParaDeletar(null)}>✕</button>
+            <h3 style={{ color: '#C0392B' }}>Excluir Compra #{compraParaDeletar.id}</h3>
+            <p style={{ fontSize: '14px', color: '#4A3728' }}>
+              Tem certeza que deseja apagar a compra da cliente <strong>{compraParaDeletar.cliente}</strong> no valor de <strong>R$ {compraParaDeletar.valorTotal?.toFixed(2)}</strong>?
+            </p>
+            <div style={{ display: 'flex', gap: '8px', width: '100%', marginTop: '10px' }}>
+              <button 
+                type="button" 
+                onClick={confirmarExclusaoCompra} 
+                style={{ flex: 1, padding: '10px', background: '#C0392B', color: '#FFF', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                Sim, Excluir
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setCompraParaDeletar(null)} 
+                style={{ flex: 1, padding: '10px', background: '#E2D8D2', color: '#4A3728', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODAL DE NOVA COMPRA */}
       {modalAberto && (
         <div className="modal-overlay" onClick={() => setModalAberto(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px', width: '100%' }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px', width: '100%', flexDirection: 'column', alignItems: 'stretch' }}>
             <button className="modal-fechar" onClick={() => setModalAberto(false)}>✕</button>
             <h3>Registrar Nova Compra</h3>
 
@@ -332,7 +394,6 @@ export default function Pedidos() {
                 <button type="button" onClick={adicionarItemAoCarrinho} className="btn-action-primary" style={{ padding: '0 12px' }}>+</button>
               </div>
 
-              {/* Lista de itens adicionados */}
               <ul style={{ maxHeight: '120px', overflowY: 'auto', paddingLeft: '15px', margin: '0' }}>
                 {itensCarrinho.map((item, index) => (
                   <li key={index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '13px' }}>

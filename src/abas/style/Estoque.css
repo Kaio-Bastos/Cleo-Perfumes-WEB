@@ -122,3 +122,47 @@
   font-size: 1.3rem;
   color: #4a3b32;
 }
+
+@media (max-width: 768px) {
+  .card-produto {
+    flex-direction: column; /* Joga os elementos de lado para cima/baixo */
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .thumb-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .info-container {
+    width: 100%;
+    align-items: center;
+  }
+
+  .precos-row {
+    flex-direction: row; /* Mantém os preços organizados lado a lado no celular se preferir, ou ajuste */
+    gap: 12px;
+  }
+
+  /* Organiza os botões de ação e o badge de quantidade lado a lado no rodapé do card mobile */
+  .card-produto > div:last-child {
+    flex-direction: row !important;
+    width: 100%;
+    justify-content: space-around;
+    border-top: 1px solid #f0e6e1;
+    padding-top: 12px;
+    margin-left: 0 !important;
+  }
+
+  .qtd-badge {
+    width: 20%;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+  }
+}

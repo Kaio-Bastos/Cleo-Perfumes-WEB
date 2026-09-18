@@ -263,7 +263,7 @@ export default function Estoque() {
 
       {/* LISTAGEM DOS PRODUTOS FILTRADOS */}
       {produtosFiltrados.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#888' }}>Nenhum produto encontrado.</p>
+        <p style={{ textAlign: 'center', color: '#888' }}>Carregando...</p>
       ) : (
         produtosFiltrados.map((p) => (
           <div key={p.id} className="card-produto">

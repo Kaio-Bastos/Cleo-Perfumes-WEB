@@ -22,6 +22,9 @@ export default function CadastroProduto() {
   const [fotoOficial, setFotoOficial] = useState(null);
   const [processandoOCR, setProcessandoOCR] = useState(false);
   const [cameraFotosAtiva, setCameraFotosAtiva] = useState(false);
+  
+  // Novo estado para alternar a câmera (environment = traseira, user = frontal)
+  const [facingMode, setFacingMode] = useState('environment');
 
   const webcamRef = useRef(null);
 
@@ -53,6 +56,10 @@ export default function CadastroProduto() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const alternarCamera = () => {
+    setFacingMode(prev => (prev === 'environment' ? 'user' : 'environment'));
   };
 
   const capturarFotoParaAI = () => {
@@ -140,7 +147,7 @@ export default function CadastroProduto() {
               onClick={() => setUsarCameraCodigo(true)}
               style={{ marginTop: '8px' }}
             >
-              📷 Ler Código pela Câmera
+              Ler Código pela Câmera
             </button>
           ) : (
             <div>
@@ -166,14 +173,28 @@ export default function CadastroProduto() {
               className="btn-action-primary"
               onClick={() => setCameraFotosAtiva(true)}
             >
-              📷 Abrir Câmera para Fotos
+              Abrir Câmera para Fotos
             </button>
           ) : (
             <>
+              <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: '#666' }}>
+                  Câmera: {facingMode === 'environment' ? 'Traseira' : 'Frontal'}
+                </span>
+                <button
+                  type="button"
+                  onClick={alternarCamera}
+                  style={{ padding: '4px 8px', fontSize: '12px', cursor: 'pointer' }}
+                >
+                  🔄 Trocar Câmera
+                </button>
+              </div>
+
               <Webcam
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
+                videoConstraints={{ facingMode: facingMode }}
                 className="webcam-stream"
               />
               <div className="webcam-actions">

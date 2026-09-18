@@ -29,13 +29,20 @@ export default function Pagamentos() {
   };
 
   const compraEstaQuitada = (compra) => {
-    if (!compra.pagamentos || compra.pagamentos.length === 0) return false;
+    if (compra.pagamentos.length === 0) return false;
     
-    const maxParcelas = compra.parcelas ? Number(compra.parcelas) : 1;
-    const qtdPagamentos = compra.pagamentos.length;
-    const IsBigger = qtdPagamentos >= maxParcelas
+    const ValorTotal = compra.valorTotal;
+    let PagamentosCriados;
+    
+    for (var i=0; i < compra.pagamentos.length; i++){
+      PagamentosCriados += compra.pagamentos[i]
+    }
 
-    return IsBigger;
+    console.log(PagamentosCriados)
+
+    const IsBigger = ValorTotal >= PagamentosCriados
+
+    return !IsBigger;
   };
 
   // Extrai a lista única de clientes a partir das compras cadastradas
