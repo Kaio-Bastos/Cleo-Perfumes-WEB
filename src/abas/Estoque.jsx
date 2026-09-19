@@ -207,7 +207,6 @@ export default function Estoque() {
             <h4>Editar Produto #{produtoEditando.id}</h4>
           <img src={produtoEditando.fotoUrl} alt="" />
           <form onSubmit={handleSalvarEdicao} className="cadastro-form">
-            <div className="two-columns">
             <input
               type="text"
               className="input-text input-nome-produto"
@@ -224,8 +223,6 @@ export default function Estoque() {
               placeholder="Nome"
               required
             />
-            </div>
-            
               <input
                 type="number"
                 step="0.01"
@@ -234,11 +231,9 @@ export default function Estoque() {
                 onChange={e => setProdutoEditando({ ...produtoEditando, valorLiquido: parseFloat(e.target.value) })}
                 placeholder="Venda (R$)"
               />
-
-            <div className="two-columns">
               <input
                 type="number"
-                className="input-text input-quantidade"
+                className="input-text-input-quantidade"
                 value={produtoEditando.quantidade}
                 onChange={e => setProdutoEditando({ ...produtoEditando, quantidade: parseInt(e.target.value) })}
                 placeholder="Quantidade"
@@ -250,8 +245,6 @@ export default function Estoque() {
                 onChange={e => setProdutoEditando({ ...produtoEditando, codigoBarras: e.target.value })}
                 placeholder="EAN"
               />
-            </div>
-
             <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
               <button type="submit" className="btn-action-primary" style={{ flex: 1 }}>Salvar Alterações</button>
               <button type="button" className="btn-action-cancel" style={{ margin: 0, flex: 1 }} onClick={() => setProdutoEditando(null)}>Cancelar</button>
@@ -293,7 +286,7 @@ export default function Estoque() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '8px' }}>
               <button 
                 onClick={() => OpenEditModal(p)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px'}}
                 title="Editar"
               >
                 ✏️

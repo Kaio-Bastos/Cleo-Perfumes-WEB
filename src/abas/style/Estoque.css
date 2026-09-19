@@ -185,21 +185,38 @@
   z-index: 1000; /* Garante que fique acima de qualquer outro elemento da página */
 }
 
-.modal-content img{
-  max-height: 200px;
-  margin-bottom: 15px;
-}
-
 /* Caixa centralizada do modal */
 .modal-content {
   background: #ffffff;
   padding: 24px;
   border-radius: 12px;
-  width:45%;
   align-items: flex;
   flex-direction: column;
   max-width: 20px; /* Largura máxima para não esticar muito em telas grandes */
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   position: relative;
   gap: 1px;
+  min-width: 200px;
+}
+
+.modal-content img{
+  max-height: 150px;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+.input-text-input-quantidade{
+  max-width: 100px;
+  align-self: center;
+  background-color: #fdf8f5;
+  border-radius: 7px;
+  border: 0.4px solid rgb(194, 192, 192);
+  height: 30px;
+  color: black;
+  text-align: center;
+}
+
+.input-text-input-quantidade i {
+  color: black;
 }
