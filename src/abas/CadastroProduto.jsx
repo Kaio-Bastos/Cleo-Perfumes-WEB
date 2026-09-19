@@ -162,7 +162,7 @@ export default function CadastroProduto() {
       setCarregando(true)
       const produtoSalvo = await salvarProduto(produtoPayload);
       setCarregando(false)
-      abrirModal("Produto Publicado!", `Produto "${produtoSalvo.nome}" salvo com sucesso!`, null)
+      abrirModal("Produto Publicado!", `Produto "${produtoSalvo.nome}" salvo com sucesso!`, produtoSalvo.codigoBarras)
 
       setFormState(estadoInicial);
       setFotoLeitura(null);
