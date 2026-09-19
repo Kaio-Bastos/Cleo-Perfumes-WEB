@@ -173,6 +173,7 @@ export default function Estoque() {
               )}
               <p><strong>{produtoEncontradoModal.nome}</strong></p>
               <p>EAN: {produtoEncontradoModal.codigoBarras}</p>
+              <p>Validade: {produtoEncontradoModal.validade}</p>
               <p>Preço de Venda: R$ {produtoEncontradoModal.valorLiquido?.toFixed(2)}</p>
               <p>Quantidade em Estoque: <strong>{produtoEncontradoModal.quantidade}</strong></p>
             </div>
@@ -181,7 +182,7 @@ export default function Estoque() {
               <button 
                 className="btn-action-primary" 
                 onClick={() => {
-                  setProdutoEditando(produtoEncontradoModal);
+                  OpenEditModal(produtoEncontradoModal);
                   setProdutoEncontradoModal(null);
                 }}
               >
