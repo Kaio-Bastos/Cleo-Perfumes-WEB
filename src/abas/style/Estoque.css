@@ -166,3 +166,40 @@
     padding-bottom: 25px;
   }
 }
+
+.form-box{
+  margin-bottom: '20px';
+  border: '2px solid #a87b68';
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10vw;
+  height: 10vh;
+  background-color: rgba(0, 0, 0, 0.6); /* Preto com transparência */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Garante que fique acima de qualquer outro elemento da página */
+}
+
+.modal-content img{
+  max-height: 200px;
+  margin-bottom: 15px;
+}
+
+/* Caixa centralizada do modal */
+.modal-content {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  width:45%;
+  align-items: flex;
+  flex-direction: column;
+  max-width: 20px; /* Largura máxima para não esticar muito em telas grandes */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  position: relative;
+  gap: 1px;
+}

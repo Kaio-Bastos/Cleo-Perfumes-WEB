@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import Webcam from 'react-webcam';
 import Tesseract from 'tesseract.js';
-import { salvarProduto } from '../produtoService';
+import { salvarProduto, listarProdutos } from '../produtoService';
 import './style/CadastroProduto.css';
-import {  handleImagemComprimida  } from '../compressionImage';
+import { handleImagemComprimida } from '../compressionImage';
 
 export default function CadastroProduto() {
   const estadoInicial = {
@@ -23,9 +23,16 @@ export default function CadastroProduto() {
   const [fotoOficial, setFotoOficial] = useState(null);
   const [processandoOCR, setProcessandoOCR] = useState(false);
   const [cameraFotosAtiva, setCameraFotosAtiva] = useState(false);
-  
-  // Novo estado para alternar a câmera (environment = traseira, user = frontal)
   const [facingMode, setFacingMode] = useState('environment');
+
+  //Verificar se o produto já existe no banco
+  const [codigoVerificado, setCodigoVerificado] = useState(null);
+  const [openVerifiedModal, setVerificadoModal] = useState(false);
+  const [tituloModal, setTitutoModal] = useState("");
+  const [contentModal, setContentModal] = useState("");
+  const [codModal, setCodModal] = useState("");
+
+  const [carregando, setCarregando] = useState(false)
 
   const webcamRef = useRef(null);
 
@@ -40,19 +47,58 @@ export default function CadastroProduto() {
       }, false);
 
       scanner.render(
-        (codigo) => {
-          setFormState(prev => ({ ...prev, codigo_barras: codigo }));
-          setUsarCameraCodigo(false);
-          scanner.clear();
+        async (codigo) => { // AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+          const resposta = await VerificarCodigos(codigo)
+          if (resposta == true) {
+            setCodigoVerificado(true)
+            abrirModal("Receita já cadastrada.", "O codigo de barras informado já existe na plataforma.", codigo)
+            setUsarCameraCodigo(false);
+          }
+          else {
+            setCodigoVerificado(false)
+            setVerificadoModal(false)
+            setFormState(prev => ({ ...prev, codigo_barras: codigo }));
+            setUsarCameraCodigo(false);
+            scanner.clear();
+          }
         },
-        () => {}
+        () => { }
       );
     }
 
     return () => {
-      if (scanner) scanner.clear().catch(() => {});
+      if (scanner) scanner.clear().catch(() => { });
     };
   }, [usarCameraCodigo]);
+
+  const fecharModal = () => {
+    setVerificadoModal(false)
+    setCodigoVerificado(null)
+    setTitutoModal("")
+    setContentModal("")
+    setCodModal("")
+  }
+
+  const abrirModal = (titu, desc, cod) => {
+    setTitutoModal(titu)
+    setContentModal(desc)
+    setCodModal(String(cod))
+    setVerificadoModal(true)
+  }
+
+
+  const VerificarCodigos = async (cod) => {
+    if (cod === null) {
+      console.error("Código invalido ou nulo.")
+      return
+    }
+    const response = await listarProdutos()
+    const encontrado = response?.find(r => String(r.codigoBarras) === String(cod));
+    if (encontrado != null) {
+      return true
+    }
+    else return false
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -75,9 +121,9 @@ export default function CadastroProduto() {
   const capturarFotoOficial = async () => {
     if (webcamRef.current) {
       const screenshot = webcamRef.current.getScreenshot();
-      console.log("screenshot: "+ screenshot.length)
+      console.log("screenshot: " + screenshot.length)
       const fotoLeve = await handleImagemComprimida(screenshot)
-      console.log("fotoLeve: "+ fotoLeve.length )
+      console.log("fotoLeve: " + fotoLeve.length)
       setFotoOficial(fotoLeve);
       setCameraFotosAtiva(false);
     }
@@ -112,15 +158,17 @@ export default function CadastroProduto() {
     };
 
     try {
+      setCarregando(true)
       const produtoSalvo = await salvarProduto(produtoPayload);
-      alert(`Produto "${produtoSalvo.nome}" salvo com sucesso!`);
+      setCarregando(false)
+      abrirModal("Produto Publicado!", `Produto "${produtoSalvo.nome}" salvo com sucesso!`, null)
 
       setFormState(estadoInicial);
       setFotoLeitura(null);
       setFotoOficial(null);
     } catch (error) {
       console.error(error);
-      alert("Falha ao salvar produto. Verifique se a API Java está rodando.");
+      abrirModal("Falha ao salvar produto.", "Verifique se a API Java está rodando.")
     }
   };
 
@@ -129,10 +177,18 @@ export default function CadastroProduto() {
       <h2 className="cadastro-title">Novo Produto</h2>
 
       <form className="cadastro-form" onSubmit={handleSubmit}>
-        
+
         {/* Código de Barras */}
         <div className="form-box">
           <label className="form-label">Código de Barras (EAN)</label>
+
+          {codigoVerificado === null ? (null)
+            : codigoVerificado ? (
+              <label className="form-label-res-n">Produto já registrado</label>
+            ) :
+              (<label className="form-label-res-y">Produto não registrado</label>)
+          }
+
           <div className="input-row">
             <input
               type="text"
@@ -167,6 +223,23 @@ export default function CadastroProduto() {
           )}
         </div>
 
+        {openVerifiedModal && (
+          <div className='modal-overlay'>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
+              <h3>{tituloModal}</h3>
+              {codModal != "" && (
+                <p>EAN: {codModal}</p>
+              )}
+              <p>{contentModal}</p>
+
+              <button className="modal-btn" onClick={() => fecharModal()}>FECHAR</button>
+
+            </div>
+          </div>
+        )
+        }
+
         {/* Fotos do Produto */}
         <div className="form-box webcam-box">
           <label className="form-label">Fotos do Produto</label>
@@ -190,7 +263,7 @@ export default function CadastroProduto() {
                   onClick={alternarCamera}
                   style={{ padding: '4px 8px', fontSize: '12px', cursor: 'pointer' }}
                 >
-                  🔄 Trocar Câmera
+                  Trocar Câmera
                 </button>
               </div>
 
@@ -206,7 +279,7 @@ export default function CadastroProduto() {
                   {processandoOCR ? 'Lendo...' : '🔍 Foto p/ Ler Nome'}
                 </button>
                 <button type="button" className="btn-cam-official" onClick={capturarFotoOficial}>
-                  📸 Foto Vitrine
+                  Foto Vitrine
                 </button>
               </div>
               <button type="button" className="btn-action-cancel" onClick={() => setCameraFotosAtiva(false)}>
@@ -277,6 +350,9 @@ export default function CadastroProduto() {
             />
           </div>
 
+        </div>
+        <div className="form-box two-columns">
+
           <div className="field-group">
             <label className="form-label">Validade (Mês/Ano)</label>
             <input
@@ -289,8 +365,8 @@ export default function CadastroProduto() {
           </div>
         </div>
 
-        <button type="submit" className="btn-submit">
-          Salvar no Estoque
+        <button type="submit" className="btn-submit" disabled={carregando}>
+          {!carregando ? ("Salvar no Estoque") : ("Carregando...")}
         </button>
       </form>
     </div>

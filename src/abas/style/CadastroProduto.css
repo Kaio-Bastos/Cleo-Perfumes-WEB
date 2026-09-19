@@ -54,6 +54,21 @@
   color: #6b584c;
 }
 
+.form-label-res-n {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b584c;
+  background-color: #ff777796;
+  border-radius: 12px;
+}
+
+.form-label-res-y {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b584c;
+  background-color: #80ffb5bb;
+  border-radius: 12px;
+}
 /* Base global para todos os inputs de texto */
 .input-text {
   width: 100%;
@@ -238,9 +253,93 @@
   font-weight: 700;
   cursor: pointer;
   margin-top: 10px;
-  transition: background 0.2s;
+  transition: 0.2s;
 }
 
 .btn-submit:hover {
   background-color: #362a23;
+  transform:scale(1.1);
+}
+
+.btn-submit:disabled{
+  background-color: #221915;
+  cursor: wait;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10vw;
+  height: 10vh;
+  background-color: rgba(0, 0, 0, 0.6); /* Preto com transparência */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Garante que fique acima de qualquer outro elemento da página */
+}
+
+/* Caixa centralizada do modal */
+.modal-content {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  width:45%;
+  align-items: flex;
+  flex-direction: column;
+  max-width: 20px; /* Largura máxima para não esticar muito em telas grandes */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  position: relative;
+  gap: 15px;
+}
+
+.modal-btn {
+  --color: #ad0b0b;
+  font-family: inherit;
+  display: inline-block;
+  width: 8em;
+  height: 2.6em;
+  line-height: 2.5em;
+  margin: 20px;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2px solid var(--color);
+  transition: color 0.5s;
+  z-index: 1;
+  font-size: 17px;
+  border-radius: 6px;
+  font-weight: 500;
+  color: var(--color);
+  background-color: #fff;
+}
+
+.modal-btn:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: var(--color);
+  height: 150px;
+  width: 200px;
+  border-radius: 50%;
+}
+
+.modal-btn:hover{
+  color: #fff;
+}
+
+.modal-btn:before {
+  top: 100%;
+  left: 100%;
+  transition: all 0.7s;
+}
+
+.modal-btn:hover::before{
+  top: -30px;
+  left: -30px;
+}
+
+.modal-btn:active::before{
+  background: hsl(0, 90%, 67%);
+  transition: background 0s;
 }

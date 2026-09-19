@@ -202,9 +202,10 @@ export default function Estoque() {
 
       {/* FORMULÁRIO DE EDIÇÃO */}
       {produtoEditando && (
-        <div className="form-box" style={{ marginBottom: '20px', border: '2px solid #a87b68' }}>
-          <h4>Editar Produto #{produtoEditando.id}</h4>
-         
+        <div className="modal-overlay">
+          <div className="modal-content" >
+            <h4>Editar Produto #{produtoEditando.id}</h4>
+          <img src={produtoEditando.fotoUrl} alt="" />
           <form onSubmit={handleSalvarEdicao} className="cadastro-form">
             <div className="two-columns">
             <input
@@ -256,6 +257,7 @@ export default function Estoque() {
               <button type="button" className="btn-action-cancel" style={{ margin: 0, flex: 1 }} onClick={() => setProdutoEditando(null)}>Cancelar</button>
             </div>
           </form>
+          </div>
         </div>
       )}
 
