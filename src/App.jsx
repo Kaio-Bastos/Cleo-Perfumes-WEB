@@ -42,18 +42,35 @@ export default function App() {
           >
             Pagamento
           </button>
+          
+          <button
+            className={`tab-button ${abaAtiva === 'boleto' ? 'active' : 'disable'}`}
+            onClick={() => setAbaAtiva('boleto')}
+          >
+            Boletos
+          </button>
         </nav>
       </header>
 
       <main className="main-content">
-        {abaAtiva === 'cadastro' && <CadastroProduto />}
+        {abaAtiva === 'cadastro' && <CadastroProduto/>}
 
         {abaAtiva === 'estoque' && <Estoque />}
 
         {abaAtiva === 'pedidos' && <Pedidos/>}
 
-         {abaAtiva === 'pagamento' && <Pagamentos/>}
+        {abaAtiva === 'pagamento' && <Pagamentos/>}
+        
+        {abaAtiva === 'boleto' && null}
       </main>
     </div>
   );
 }
+
+/*
+Para os boletos, precisamos de:
+  id int,
+  codigo de barras int(50) unique,
+  vencimento date,
+  valor decimal(10,2),
+*/

@@ -55,7 +55,6 @@ export default function Estoque() {
     try {
       const data = await listarProdutos();
       setProdutos(data);
-      
     } catch (err) {
       console.error(err);
     } finally {
@@ -117,7 +116,6 @@ export default function Estoque() {
   }
 
   const OpenEditModal = (produto) =>{
-    console.log(produto)
     setProdutoEditando({...produto, validade: Separar(produto.validade)})
   }
 

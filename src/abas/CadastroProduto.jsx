@@ -51,8 +51,9 @@ export default function CadastroProduto() {
           const resposta = await VerificarCodigos(codigo)
           if (resposta == true) {
             setCodigoVerificado(true)
-            abrirModal("Receita já cadastrada.", "O codigo de barras informado já existe na plataforma.", codigo)
+            abrirModal("Produto já cadastrado.", "O codigo de barras informado já existe na plataforma.", codigo)
             setUsarCameraCodigo(false);
+            localStorage.setItem('produtoParaEditarEAN', codigo);
           }
           else {
             setCodigoVerificado(false)
@@ -233,7 +234,7 @@ export default function CadastroProduto() {
               )}
               <p>{contentModal}</p>
 
-              <button className="modal-btn" onClick={() => fecharModal()}>FECHAR</button>
+              <button className="modal-btn" onClick={() => {fecharModal();}}>FECHAR</button>
 
             </div>
           </div>
