@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@zxing/library": "^0.23.0",
     "browser-image-compression": "^2.0.2",
     "html5-qrcode": "^2.3.8",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-webcam": "^7.2.0",
-    "tesseract.js": "^7.0.0"
+    "tesseract.js": "^7.0.0",
+    "validation-br": "^2.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

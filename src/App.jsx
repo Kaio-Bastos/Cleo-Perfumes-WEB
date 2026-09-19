@@ -3,6 +3,7 @@ import CadastroProduto from './abas/CadastroProduto';
 import Estoque from './abas/Estoque';
 import Pedidos from './abas/Pedidos';
 import Pagamentos from './abas/Pagamentos';
+import Boletos from './abas/Boleto';
 import './App.css';
 
 export default function App() {
@@ -61,7 +62,7 @@ export default function App() {
 
         {abaAtiva === 'pagamento' && <Pagamentos/>}
         
-        {abaAtiva === 'boleto' && null}
+        {abaAtiva === 'boleto' && <Boletos/>}
       </main>
     </div>
   );
