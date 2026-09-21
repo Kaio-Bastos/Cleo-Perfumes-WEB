@@ -5,7 +5,6 @@ import Tesseract from 'tesseract.js';
 import { salvarProduto, listarProdutos } from '../produtoService';
 import './style/CadastroProduto.css';
 import { handleImagemComprimida } from '../compressionImage';
-import { BrowserMultiFormatReader, DecodeHintType, BarcodeFormat } from '@zxing/library';
 
 export default function CadastroProduto() {
   const estadoInicial = {
@@ -33,60 +32,45 @@ export default function CadastroProduto() {
   const [contentModal, setContentModal] = useState("");
   const [codModal, setCodModal] = useState("");
 
-  const videoRefProdutos = useRef(null);
-
   const [carregando, setCarregando] = useState(false)
 
   const webcamRef = useRef(null);
 
   useEffect(() => {
-  if (!usarCameraCodigo) return;
+    let scanner = null;
 
-  // Configurações focadas apenas em códigos de barras de produtos comerciais (EAN_13)
-  const hints = new Map();
-  hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]);
-  hints.set(DecodeHintType.TRY_HARDER, true);
+    if (usarCameraCodigo) {
+      scanner = new Html5QrcodeScanner("reader-barras", {
+        fps: 15,
+        qrbox: { width: 250, height: 120 },
+        formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]
+      }, false);
 
-  const codeReader = new BrowserMultiFormatReader(hints);
-
-  codeReader.decodeFromVideoDevice(
-    null, // Usa a câmera padrão/ativa do sistema
-    videoRefProdutos.current,
-    async (result, err) => {
-      if (result) {
-        const codigo = result.getText();
-        console.log("Código EAN_13 detectado:", codigo);
-
-        // Interrompe imediatamente o leitor para evitar chamadas duplicadas à API enquanto processa
-        codeReader.reset();
-
-        try {
-          const resposta = await VerificarCodigos(codigo);
-          
-          if (resposta === true) {
-            setCodigoVerificado(true);
-            abrirModal("Produto já cadastrado.", "O código de barras informado já existe na plataforma.", codigo);
+      scanner.render(
+        async (codigo) => { // AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+          const resposta = await VerificarCodigos(codigo)
+          if (resposta == true) {
+            setCodigoVerificado(true)
+            abrirModal("Produto já cadastrado.", "O codigo de barras informado já existe na plataforma.", codigo)
             setUsarCameraCodigo(false);
             localStorage.setItem('produtoParaEditarEAN', codigo);
-          } else {
-            setCodigoVerificado(false);
-            setVerificadoModal(false);
+          }
+          else {
+            setCodigoVerificado(false)
+            setVerificadoModal(false)
             setFormState(prev => ({ ...prev, codigo_barras: codigo }));
             setUsarCameraCodigo(false);
+            scanner.clear();
           }
-        } catch (apiError) {
-          console.error("Erro ao verificar código:", apiError);
-          // Opcional: Trate erros de rede aqui, reativando a câmera se necessário
-        }
-      }
+        },
+        () => { }
+      );
     }
-  ).catch((err) => console.error("Erro ao iniciar câmera de produtos:", err));
 
-  // Cleanup: Desliga a câmera perfeitamente ao fechar ou trocar de rota
-  return () => {
-    codeReader.reset();
-  };
-}, [usarCameraCodigo]);
+    return () => {
+      if (scanner) scanner.clear().catch(() => { });
+    };
+  }, [usarCameraCodigo]);
 
   const fecharModal = () => {
     setVerificadoModal(false)
@@ -228,36 +212,15 @@ export default function CadastroProduto() {
             </button>
           ) : (
             <div>
-  {/* Container visual moderno em alta definição */}
-  <div style={{ position: 'relative', width: '100%', height: '300px', overflow: 'hidden', borderRadius: '8px', background: '#000', marginTop: '10px' }}>
-    <video
-      ref={videoRefProdutos}
-      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-    />
-    {/* Linha guia vermelha centralizada para produtos */}
-    <div style={{
-      position: 'absolute',
-      top: '50%',
-      left: '20%',
-      width: '60%',
-      height: '2px',
-      backgroundColor: 'red',
-      boxShadow: '0 0 8px red',
-      opacity: 0.7,
-      transform: 'translateY(-50%)',
-      pointerEvents: 'none'
-    }} />
-  </div>
-
-  <button
-    type="button"
-    className="btn-action-cancel"
-    onClick={() => setUsarCameraCodigo(false)}
-    style={{ marginTop: '12px', display: 'block', width: '100%' }}
-  >
-    Cancelar Câmera de Barras
-  </button>
-</div>
+              <div id="reader-barras" style={{ marginTop: '10px' }} />
+              <button
+                type="button"
+                className="btn-action-cancel"
+                onClick={() => setUsarCameraCodigo(false)}
+              >
+                Cancelar Câmera de Barras
+              </button>
+            </div>
           )}
         </div>
 
