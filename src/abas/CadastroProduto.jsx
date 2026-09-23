@@ -10,30 +10,29 @@ export default function CadastroProduto() {
   const estadoInicial = {
     codigo_barras: '',
     nome: '',
-    marca: '',
-    validade: '',
-    valor_compra: '',
-    valor_venda: '',
-    quantidade: '1'
+    valor_venda: ''
   };
 
   const [formState, setFormState] = useState(estadoInicial);
+  
+  // Novos estados para gerenciar a lista de lotes
+  const [lotes, setLotes] = useState([]);
+  const [novoQtd, setNovoQtd] = useState('1');
+  const [novoValidade, setNovoValidade] = useState('');
+
   const [usarCameraCodigo, setUsarCameraCodigo] = useState(false);
-  const [fotoLeitura, setFotoLeitura] = useState(null);
   const [fotoOficial, setFotoOficial] = useState(null);
-  const [processandoOCR, setProcessandoOCR] = useState(false);
   const [cameraFotosAtiva, setCameraFotosAtiva] = useState(false);
   const [facingMode, setFacingMode] = useState('environment');
 
-  //Verificar se o produto já existe no banco
+  // Verificar se o produto já existe no banco
   const [codigoVerificado, setCodigoVerificado] = useState(null);
   const [openVerifiedModal, setVerificadoModal] = useState(false);
   const [tituloModal, setTitutoModal] = useState("");
   const [contentModal, setContentModal] = useState("");
   const [codModal, setCodModal] = useState("");
 
-  const [carregando, setCarregando] = useState(false)
-
+  const [carregando, setCarregando] = useState(false);
   const webcamRef = useRef(null);
 
   useEffect(() => {
@@ -47,17 +46,16 @@ export default function CadastroProduto() {
       }, false);
 
       scanner.render(
-        async (codigo) => { // AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-          const resposta = await VerificarCodigos(codigo)
+        async (codigo) => {
+          const resposta = await VerificarCodigos(codigo);
           if (resposta == true) {
-            setCodigoVerificado(true)
-            abrirModal("Produto já cadastrado.", "O codigo de barras informado já existe na plataforma.", codigo)
+            setCodigoVerificado(true);
+            abrirModal("Produto já cadastrado.", "O código de barras informado já existe na plataforma.", codigo);
             setUsarCameraCodigo(false);
             localStorage.setItem('produtoParaEditarEAN', codigo);
-          }
-          else {
-            setCodigoVerificado(false)
-            setVerificadoModal(false)
+          } else {  
+            setCodigoVerificado(false);
+            setVerificadoModal(false);
             setFormState(prev => ({ ...prev, codigo_barras: codigo }));
             setUsarCameraCodigo(false);
             scanner.clear();
@@ -73,33 +71,26 @@ export default function CadastroProduto() {
   }, [usarCameraCodigo]);
 
   const fecharModal = () => {
-    setVerificadoModal(false)
-    setCodigoVerificado(null)
-    setTitutoModal("")
-    setContentModal("")
-    setCodModal("")
-  }
+    setVerificadoModal(false);
+    setCodigoVerificado(null);
+    setTitutoModal("");
+    setContentModal("");
+    setCodModal("");
+  };
 
   const abrirModal = (titu, desc, cod) => {
-    setTitutoModal(titu)
-    setContentModal(desc)
-    setCodModal(String(cod))
-    setVerificadoModal(true)
-  }
-
+    setTitutoModal(titu);
+    setContentModal(desc);
+    setCodModal(String(cod));
+    setVerificadoModal(true);
+  };
 
   const VerificarCodigos = async (cod) => {
-    if (cod === null) {
-      console.error("Código invalido ou nulo.")
-      return
-    }
-    const response = await listarProdutos()
+    if (cod === null) return false;
+    const response = await listarProdutos();
     const encontrado = response?.find(r => String(r.codigoBarras) === String(cod));
-    if (encontrado != null) {
-      return true
-    }
-    else return false
-  }
+    return encontrado != null;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,66 +101,71 @@ export default function CadastroProduto() {
     setFacingMode(prev => (prev === 'environment' ? 'user' : 'environment'));
   };
 
-  const capturarFotoParaAI = () => {
-    if (webcamRef.current) {
-      const screenshot = webcamRef.current.getScreenshot();
-      setFotoLeitura(screenshot);
-      setCameraFotosAtiva(false);
-      executarOCR(screenshot);
-    }
-  };
-
   const capturarFotoOficial = async () => {
     if (webcamRef.current) {
       const screenshot = webcamRef.current.getScreenshot();
-      console.log("screenshot: " + screenshot.length)
-      const fotoLeve = await handleImagemComprimida(screenshot)
-      console.log("fotoLeve: " + fotoLeve.length)
+      const fotoLeve = await handleImagemComprimida(screenshot);
       setFotoOficial(fotoLeve);
       setCameraFotosAtiva(false);
     }
   };
 
-  const executarOCR = async (imagemBase64) => {
-    setProcessandoOCR(true);
-    try {
-      const { data: { text } } = await Tesseract.recognize(imagemBase64, 'por');
-      const textoLimpo = text.trim().replace(/[\r\n]+/g, " ");
-      if (textoLimpo) {
-        setFormState((prev) => ({ ...prev, nome: textoLimpo }));
-      }
-    } catch (err) {
-      console.error("Erro OCR:", err);
-    } finally {
-      setProcessandoOCR(false);
+  // Funções para gerenciar os lotes dinâmicos
+  const adicionarLote = () => {
+    if (!novoQtd || parseInt(novoQtd) <= 0) {
+      alert("Informe uma quantidade válida.");
+      return;
     }
+    if (!novoValidade) {
+      alert("Informe a data de validade do lote.");
+      return;
+    }
+
+    setLotes(prev => [...prev, { quantidade: parseInt(novoQtd, 10), validade: novoValidade }]);
+    setNovoQtd('1');
+    setNovoValidade('');
   };
+
+  const removerLote = (index) => {
+    setLotes(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Soma total calculada dinamicamente de todos os lotes
+  const quantidadeTotalGeral = lotes.reduce((acc, item) => acc + item.quantidade, 0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (lotes.length === 0) {
+      alert("Adicione pelo menos um lote com quantidade e validade!");
+      return;
+    }
 
     const produtoPayload = {
       codigoBarras: formState.codigo_barras,
       nome: formState.nome,
       fotoUrl: fotoOficial,
-      validade: formState.validade ? `${formState.validade}-01` : null,
       valorBruto: 0,
       valorLiquido: parseFloat(formState.valor_venda || 0),
-      quantidade: parseInt(formState.quantidade || 0, 10)
+      lotes: lotes.map(l => ({
+        quantidade: l.quantidade,
+        validade: `${l.validade}-01` // Padroniza para o dia 01 do mês
+      }))
     };
 
     try {
-      setCarregando(true)
+      setCarregando(true);
       const produtoSalvo = await salvarProduto(produtoPayload);
-      setCarregando(false)
-      abrirModal("Produto Publicado!", `Produto "${produtoSalvo.nome}" salvo com sucesso!`, produtoSalvo.codigoBarras)
+      setCarregando(false);
+      abrirModal("Produto Publicado!", `Produto "${produtoSalvo.nome}" salvo com sucesso!`, produtoSalvo.codigoBarras);
 
       setFormState(estadoInicial);
-      setFotoLeitura(null);
+      setLotes([]);
       setFotoOficial(null);
     } catch (error) {
       console.error(error);
-      abrirModal("Falha ao salvar produto.", "Verifique se a API Java está rodando.")
+      setCarregando(false);
+      abrirModal("Falha ao salvar produto.", "Verifique se a API Java está rodando.");
     }
   };
 
@@ -182,13 +178,11 @@ export default function CadastroProduto() {
         {/* Código de Barras */}
         <div className="form-box">
           <label className="form-label">Código de Barras (EAN)</label>
-
-          {codigoVerificado === null ? (null)
-            : codigoVerificado ? (
-              <label className="form-label-res-n">Produto já registrado</label>
-            ) :
-              (<label className="form-label-res-y">Produto não registrado</label>)
-          }
+          {codigoVerificado === null ? null : codigoVerificado ? (
+            <label className="form-label-res-n">Produto já registrado</label>
+          ) : (
+            <label className="form-label-res-y">Produto não registrado</label>
+          )}
 
           <div className="input-row">
             <input
@@ -227,24 +221,17 @@ export default function CadastroProduto() {
         {openVerifiedModal && (
           <div className='modal-overlay'>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
               <h3>{tituloModal}</h3>
-              {codModal != "" && (
-                <p>EAN: {codModal}</p>
-              )}
+              {codModal !== "" && <p>EAN: {codModal}</p>}
               <p>{contentModal}</p>
-
-              <button className="modal-btn" onClick={() => {fecharModal();}}>FECHAR</button>
-
+              <button className="modal-btn" onClick={() => fecharModal()}>FECHAR</button>
             </div>
           </div>
-        )
-        }
+        )}
 
         {/* Fotos do Produto */}
         <div className="form-box webcam-box">
           <label className="form-label">Fotos do Produto</label>
-
           {!cameraFotosAtiva ? (
             <button
               type="button"
@@ -276,9 +263,6 @@ export default function CadastroProduto() {
                 className="webcam-stream"
               />
               <div className="webcam-actions">
-                <button type="button" className="btn-cam-ai" onClick={capturarFotoParaAI}>
-                  {processandoOCR ? 'Lendo...' : '🔍 Foto p/ Ler Nome'}
-                </button>
                 <button type="button" className="btn-cam-official" onClick={capturarFotoOficial}>
                   Foto Vitrine
                 </button>
@@ -290,12 +274,6 @@ export default function CadastroProduto() {
           )}
 
           <div className="previews-status">
-            {fotoLeitura && (
-              <div className="preview-item">
-                <p>Leitura AI</p>
-                <img src={fotoLeitura} alt="AI" className="preview-thumb preview-thumb-large" />
-              </div>
-            )}
             {fotoOficial && (
               <div className="preview-item">
                 <p>Foto Vitrine</p>
@@ -319,7 +297,7 @@ export default function CadastroProduto() {
           />
         </div>
 
-        {/* Preços: Compra e Venda */}
+        {/* Preço de Venda */}
         <div className="form-box two-columns">
           <div className="field-group">
             <label className="form-label">Preço Venda (R$)</label>
@@ -336,38 +314,62 @@ export default function CadastroProduto() {
           </div>
         </div>
 
-        {/* Quantidade e Validade */}
-        <div className="form-box two-columns">
-          <div className="field-group">
-            <label className="form-label">Quantidade</label>
-            <input
-              type="number"
-              name="quantidade"
-              value={formState.quantidade}
-              onChange={handleChange}
-              placeholder="1"
-              className="input-text input-quantidade"
-              required
-            />
+        {/* GERENCIAMENTO DE LOTES */}
+        <div className="form-box" style={{ border: '1px dashed #a87b68', padding: '12px', borderRadius: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <label className="form-label" style={{ margin: 0 }}>Gerenciar Lotes e Validades</label>
+            <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#a87b68' }}>
+              Total: {quantidadeTotalGeral}
+            </span>
           </div>
 
-        </div>
-        <div className="form-box two-columns">
-
-          <div className="field-group">
-            <label className="form-label">Validade (Mês/Ano)</label>
+          <div className="two-columns" style={{ gap: '8px', marginBottom: '10px' }}>
+            <input
+              type="number"
+              value={novoQtd}
+              onChange={(e) => setNovoQtd(e.target.value)}
+              placeholder="Qtd"
+              className="input-text input-quantidade"
+            />
             <input
               type="month"
-              name="validade"
-              value={formState.validade}
-              onChange={handleChange}
+              value={novoValidade}
+              onChange={(e) => setNovoValidade(e.target.value)}
               className="input-text input-validade"
             />
           </div>
+
+          <button
+            type="button"
+            className="btn-action-primary"
+            onClick={adicionarLote}
+            style={{ width: '100%', marginBottom: '12px' }}
+          >
+            + Adicionar Lote
+          </button>
+
+          {/* Lista de lotes adicionados */}
+          {lotes.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {lotes.map((lote, index) => (
+                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9f6f0', padding: '8px', borderRadius: '6px', fontSize: '14px' }}>
+                  <span>Qtd: <strong>{lote.quantidade}</strong> | Validade: <strong>{lote.validade}</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => removerLote(index)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b' }}
+                    title="Remover lote"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <button type="submit" className="btn-submit" disabled={carregando}>
-          {!carregando ? ("Salvar no Estoque") : ("Carregando...")}
+          {!carregando ? "Salvar no Estoque" : "Carregando..."}
         </button>
       </form>
     </div>
