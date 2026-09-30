@@ -144,24 +144,26 @@ export default function Estoque() {
   };
 
   const handleSalvarEdicao = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        nome: produtoEditando.nome,
-        valorLiquido: produtoEditando.valorLiquido,
-        codigoBarras: produtoEditando.codigoBarras,
-        fotoUrl: produtoEditando.fotoUrl,
-        lotes: produtoEditando.lotes || []
-      };
+  e.preventDefault();
+  const nomeMaior = (produtoEditando.nome || '').toUpperCase();
 
-      await atualizarProduto(produtoEditando.id, payload);
-      alert("Produto atualizado com sucesso!");
-      setProdutoEditando(null);
-      carregarEstoque();
-    } catch (err) {
-      alert("Erro ao atualizar o produto.");
-    }
-  };
+  try {
+    const payload = {
+      nome: nomeMaior, // Garante que vai maiúsculo para o banco
+      valorLiquido: produtoEditando.valorLiquido,
+      codigoBarras: produtoEditando.codigoBarras,
+      fotoUrl: produtoEditando.fotoUrl,
+      lotes: produtoEditando.lotes || []
+    };
+
+    await atualizarProduto(produtoEditando.id, payload);
+    alert("Produto atualizado com sucesso!");
+    setProdutoEditando(null);
+    carregarEstoque();
+  } catch (err) {
+    alert("Erro ao atualizar o produto.");
+  }
+};
 
   const produtosFiltrados = produtos.filter((p) => {
     const termoBusca = busca.toLowerCase();
@@ -415,14 +417,14 @@ export default function Estoque() {
             <div key={p.id} className="card-produto">
               <div className="thumb-container">
                 {p.fotoUrl ? (
-                  <img src={p.fotoUrl} alt={p.nome} className="thumb-img" />
+                  <img src={p.fotoUrl} alt={p.nome ? p.nome.toUpperCase() : ''} className="thumb-img" />
                 ) : (
                   <span className="thumb-placeholder">Sem foto</span>
                 )}
               </div>
 
               <div className="info-container">
-                <strong className="produto-nome">{p.nome}</strong>
+                <strong className="produto-nome">{p.nome ? p.nome.toUpperCase() : ''}</strong>
                 <span className="produto-ean">EAN: {p.codigoBarras || 'N/A'}</span>
                 <div className="precos-row">
                   <span>Vencimento: {formatarDataParaExibicao(validadeMaisProxima?.substring(0, 7))}</span>

@@ -14,7 +14,7 @@ export default function CadastroProduto() {
   };
 
   const [formState, setFormState] = useState(estadoInicial);
-  
+
   // Novos estados para gerenciar a lista de lotes
   const [lotes, setLotes] = useState([]);
   const [novoQtd, setNovoQtd] = useState('1');
@@ -53,7 +53,7 @@ export default function CadastroProduto() {
             abrirModal("Produto já cadastrado.", "O código de barras informado já existe na plataforma.", codigo);
             setUsarCameraCodigo(false);
             localStorage.setItem('produtoParaEditarEAN', codigo);
-          } else {  
+          } else {
             setCodigoVerificado(false);
             setVerificadoModal(false);
             setFormState(prev => ({ ...prev, codigo_barras: codigo }));
@@ -112,19 +112,46 @@ export default function CadastroProduto() {
 
   // Funções para gerenciar os lotes dinâmicos
   const adicionarLote = () => {
-    if (!novoQtd || parseInt(novoQtd) <= 0) {
-      alert("Informe uma quantidade válida.");
-      return;
-    }
-    if (!novoValidade) {
-      alert("Informe a data de validade do lote.");
-      return;
-    }
+  if (!novoQtd || parseInt(novoQtd, 10) <= 0) {
+    alert("Informe uma quantidade válida.");
+    return;
+  }
+  if (!novoValidade) {
+    alert("Informe a data de validade do lote.");
+    return;
+  }
 
-    setLotes(prev => [...prev, { quantidade: parseInt(novoQtd, 10), validade: novoValidade }]);
-    setNovoQtd('1');
-    setNovoValidade('');
-  };
+  // 1. Verifica se já existe um lote com essa mesma validade
+  const loteExiste = lotes.some(lote => lote.validade === novoValidade);
+
+  if (loteExiste) {
+    // 2. Se já existe, atualiza a quantidade somando os valores de forma imutável
+    setLotes(prev =>
+      prev.map(lote => {
+        if (lote.validade === novoValidade) {
+          // Retorna um novo objeto com a soma correta (convertendo para número)
+          return { 
+            ...lote, 
+            quantidade: lote.quantidade + parseInt(novoQtd, 10) 
+          };
+        }
+        // Retorna os outros lotes sem alteração
+        return lote;
+      })
+    );
+  } else {
+    // 3. Se não existe, adiciona um novo lote ao array
+    setLotes(prev => [
+      ...prev, 
+      { quantidade: parseInt(novoQtd, 10), validade: novoValidade }
+    ]);
+  }
+
+  // 4. Limpa os campos do formulário após o sucesso
+  setNovoQtd('1');
+  setNovoValidade('');
+};
+
 
   const removerLote = (index) => {
     setLotes(prev => prev.filter((_, i) => i !== index));
@@ -135,21 +162,42 @@ export default function CadastroProduto() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if(formState.codigo_barras == ""){
+      alert("Preencha o código de barras")
+      return
+    }
 
+    if(fotoOficial == null){
+      alert("Tire a foto para o produto")
+      return
+    }
+
+    if(formState.nome == ""){
+      alert("Preencha o nome do produto")
+      return
+    }
+
+    if(formState.valor_venda <= 0 ){
+      alert("Preencha o preço de venda")
+      return
+    }
+    
     if (lotes.length === 0) {
       alert("Adicione pelo menos um lote com quantidade e validade!");
       return;
     }
 
+
     const produtoPayload = {
       codigoBarras: formState.codigo_barras,
-      nome: formState.nome,
+      nome: formState.nome.toUpperCase(), // Força maiúsculo ao cadastrar
       fotoUrl: fotoOficial,
       valorBruto: 0,
       valorLiquido: parseFloat(formState.valor_venda || 0),
       lotes: lotes.map(l => ({
         quantidade: l.quantidade,
-        validade: `${l.validade}-01` // Padroniza para o dia 01 do mês
+        validade: `${l.validade}-01`
       }))
     };
 
@@ -168,6 +216,11 @@ export default function CadastroProduto() {
       abrirModal("Falha ao salvar produto.", "Verifique se a API Java está rodando.");
     }
   };
+
+  const formatData = (data) => {
+    const validade = data[5] + data[6] + '/' + data[2] + data[3]
+    return validade
+  }
 
   return (
     <div className="cadastro-container">
@@ -264,7 +317,6 @@ export default function CadastroProduto() {
               />
               <div className="webcam-actions">
                 <button type="button" className="btn-cam-official" onClick={capturarFotoOficial}>
-                  Foto Vitrine
                 </button>
               </div>
               <button type="button" className="btn-action-cancel" onClick={() => setCameraFotosAtiva(false)}>
@@ -315,7 +367,7 @@ export default function CadastroProduto() {
         </div>
 
         {/* GERENCIAMENTO DE LOTES */}
-        <div className="form-box" style={{ border: '1px dashed #a87b68', padding: '12px', borderRadius: '8px' }}>
+        <div className="form-box" style={{ border: 'none', padding: '12px', borderRadius: '8px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <label className="form-label" style={{ margin: 0 }}>Gerenciar Lotes e Validades</label>
             <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#a87b68' }}>
@@ -353,14 +405,48 @@ export default function CadastroProduto() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {lotes.map((lote, index) => (
                 <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9f6f0', padding: '8px', borderRadius: '6px', fontSize: '14px' }}>
-                  <span>Qtd: <strong>{lote.quantidade}</strong> | Validade: <strong>{lote.validade}</strong></span>
-                  <button
-                    type="button"
-                    onClick={() => removerLote(index)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b' }}
-                    title="Remover lote"
-                  >
-                    🗑️
+                  <span>Qtd: <strong>{lote.quantidade}</strong> | Validade: <strong>{formatData(lote.validade)}</strong></span>  
+
+                  <button aria-label="Delete item" onClick={() => removerLote(index)} class="delete-button"
+                    title="Remover lote">
+                    <svg
+                      class="trash-svg"
+                      viewBox="0 -10 64 74"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g id="trash-can">
+                        <rect
+                          x="16"
+                          y="24"
+                          width="16"
+                          height="15"
+                          rx="3"
+                          ry="3"
+                          fill="#e74c3c"
+                        ></rect>
+
+                        <g transform-origin="12 18" id="lid-group">
+                          <rect
+                            x="14"
+                            y="19"
+                            width="20"
+                            height="3"
+                            rx="2"
+                            ry="2"
+                            fill="#c0392b"
+                          ></rect>
+                          <rect
+                            x="21"
+                            y="17"
+                            width="6"
+                            height="2"
+                            rx="2"
+                            ry="2"
+                            fill="#c0392b"
+                          ></rect>
+                        </g>
+                      </g>
+                    </svg>
                   </button>
                 </div>
               ))}
